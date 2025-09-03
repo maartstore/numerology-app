@@ -151,7 +151,7 @@ function App() {
     <div className="App">
       <header className="App-header">
         <img src="/maartlogo.png" alt="Maartstore Logo" width="120" />
-        <h1>Maartstore Numerology App</h1>
+        <h1>🔮 Maartstore Numerology App</h1>
         <p>Enter your details to discover your numbers</p>
       </header>
 
