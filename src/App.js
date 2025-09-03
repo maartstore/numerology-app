@@ -130,23 +130,36 @@ function App() {
   };
 
   const handleCustomSubmit = (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    const data = {
-      name,
-      dob,
-      sex,
-      email,
-      phone,
-      problems,
-      missing: result?.missing,
-    };
-
-    console.log("Custom Bracelet Request:", data);
-
-    alert("Your request has been sent! Our team will contact you.");
-    setShowCustomForm(false);
+  const templateParams = {
+    name,
+    dob,
+    sex,
+    email,
+    phone,
+    problems,
+    missing: result?.missing.join(", "),
+    personality: result?.personality,
+    destiny: result?.destiny,
+    kua: result?.kua,
   };
+
+  emailjs.send(
+    "service_3utumto",    
+    "Ytemplate_x8vvq94",   
+    templateParams,
+    "uIGlyuK3r1TB-2GS3"     
+  )
+  .then(() => {
+    alert("✅ Your request has been sent! Our team will contact you soon.");
+  })
+  .catch((err) => {
+    console.error("FAILED...", err);
+    alert("⚠️ Something went wrong. Please try again.");
+  });
+};
+
 
   return (
     <div className="App">
