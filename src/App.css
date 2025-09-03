@@ -1,0 +1,253 @@
+/* App Container */
+.App {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  min-height: 100vh;
+  background: #3e2f10; /* earthy dark background */
+  font-family: Arial, sans-serif;
+  color: white;
+  padding: 20px;
+}
+
+/* Header */
+.App-header img {
+  margin-bottom: 10px;
+  width: 100px;
+}
+
+h1 {
+  margin: 5px 0;
+  font-size: 24px;
+  color: white;
+}
+
+p {
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: #f0f0f0;
+}
+
+/* Form */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 340px;
+  margin: 20px auto;
+  padding: 15px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.form-group label {
+  margin-bottom: 5px;
+  font-size: 13px;
+  font-weight: bold;
+  color: white;
+}
+
+input,
+select,
+textarea {
+  padding: 8px;
+  font-size: 14px;
+  width: 100%;
+  border: 1px solid #a78a6b;
+  border-radius: 4px;
+  background: #2b2110;
+  color: white;
+}
+
+textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.error {
+  width: 100%;
+  text-align: left;
+  font-size: 13px;
+  background: #531515;
+  border: 1px solid #ff5e5e;
+  color: #ffd6d6;
+  padding: 8px;
+  border-radius: 6px;
+}
+
+/* Primary Button */
+button {
+  padding: 10px;
+  background: #a78a6b;
+  font-size: 14px;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.3s;
+  margin-top: 5px;
+}
+
+button:hover {
+  background: #8d7257;
+}
+
+/* Result Box */
+.result-box {
+  margin-top: 20px;
+  padding: 20px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  text-align: center;
+  width: 380px;
+  box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.4);
+}
+
+.result-box h2 {
+  margin-bottom: 10px;
+  font-size: 20px;
+}
+
+.highlight {
+  color: #a78a6b;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+/* Numbers row */
+.nums-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin: 10px 0 6px 0;
+}
+
+.num-card {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 8px;
+}
+
+.num-label {
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+.num-value {
+  font-size: 20px;
+  font-weight: bold;
+  color: #ffd99a;
+}
+
+/* Lo Shu Grid */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 80px);
+  gap: 12px;
+  justify-content: center;
+  margin: 10px auto 14px auto;
+}
+
+.grid-cell {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 16px 10px;
+  border-radius: 8px;
+  font-weight: bold;
+  color: #fff;
+  text-align: center;
+  font-size: 16px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Highlight missing numbers (red) */
+.grid-cell.missing {
+  background: rgba(255, 0, 0, 0.3) !important;
+  border: 1px solid #ff4444;
+  color: #ffcccc !important;
+}
+
+/* Highlight core numbers (Personality, Destiny, KUA in gold) */
+.grid-cell.core {
+  background: rgba(255, 215, 0, 0.35) !important;
+  border: 2px solid gold;
+  color: #fff8dc !important;
+  font-weight: bold;
+  box-shadow: 0 0 8px gold;
+}
+
+/* Present cells (keep subtle style) */
+.grid-cell.present {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Recommendations */
+.result-box h3 {
+  margin-top: 15px;
+  margin-bottom: 10px;
+  font-size: 18px;
+  color: #ffd99a;
+}
+
+.result-box p {
+  font-size: 14px;
+  line-height: 1.4em;
+  color: #f0f0f0;
+}
+
+.missing-line {
+  margin-top: 6px;
+  font-size: 14px;
+}
+
+/* Custom request form */
+main h2 {
+  margin-top: 10px;
+  font-size: 20px;
+  color: #ffd99a;
+}
+
+.form textarea {
+  background: #2b2110;
+  border: 1px solid #a78a6b;
+  border-radius: 6px;
+  padding: 10px;
+  font-size: 14px;
+  color: white;
+}
+
+.remedy-list {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0 0 0;
+  text-align: left;
+}
+
+.remedy-list li {
+  margin-bottom: 8px;
+}
+
+/* Small screens */
+@media (max-width: 420px) {
+  .result-box, .form {
+    width: 100%;
+    max-width: 360px;
+  }
+  .grid {
+    grid-template-columns: repeat(3, 72px);
+    gap: 10px;
+  }
+}
