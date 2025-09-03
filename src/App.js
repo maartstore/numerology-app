@@ -2,16 +2,17 @@ import React, { useState } from "react";
 import "./App.css";
 
 const crystals = {
-  1: "Citrine – boosts confidence & leadership",
-  2: "Moonstone – enhances harmony & intuition",
-  3: "Carnelian – sparks creativity & joy",
-  4: "Pyrite – builds stability & focus",
-  5: "Lapis Lazuli – improves adaptability",
-  6: "Rose Quartz – strengthens love & relationships",
-  7: "Amethyst – deepens spirituality & wisdom",
-  8: "Tiger’s Eye – attracts abundance & power",
-  9: "Black Tourmaline – clears karmic blockages",
+  1: "Sun – Carnelian",
+  2: "Moon – Clear Quartz",
+  3: "Jupiter – Yellow Citrine",
+  4: "Rahu – Pyrite",
+  5: "Mercury – Green Jade or Green Aventurine",
+  6: "Venus – Rose Quartz",
+  7: "Ketu – Tiger Eye",
+  8: "Saturn – Amethyst",
+  9: "Mars – Red Jasper",
 };
+
 
 const reduceToSingle = (num) => {
   let n = Number(num) || 0;
@@ -252,20 +253,46 @@ function App() {
                 </div>
               )}
               {result.missing.length > 1 && (
-                <div>
-                  <p>
-                    Our team of numerology experts will advise you your missing
-                    numbers and accordingly combo of crystals bracelet for you
-                    only to get maximum luck. Harmony and stability in your
-                    life. No other will make a customized bracelet for you. Here
-                    you will get customized bracelet save cost and easy to
-                    maintain.
-                  </p>
-                  <button onClick={() => setShowCustomForm(true)}>
-                    Request Customized Bracelet
-                  </button>
-                </div>
-              )}
+  <div>
+    <div className="recommendation-text">
+      <p>
+        Based on your date of birth and Lo Shu Grid, our Maart Store
+        numerology specialists have found that some numbers are missing
+        in your chart:
+      </p>
+
+      <ul>
+        {result.missing.map((num) => (
+          <li key={num}>
+            {num} → {crystals[num]}
+          </li>
+        ))}
+      </ul>
+
+      <p>
+        These missing numbers show where a little more balance and
+        support is needed in your life.
+      </p>
+      <p>
+        That’s why instead of suggesting just one crystal, we’ll create
+        a custom bracelet with the perfect combination of crystals chosen
+        specially for you. This blend is designed to bring more luck,
+        harmony, and stability, while being easy to wear and maintain.
+      </p>
+      <p>
+        Think of it as your personal energy companion — crafted with care
+        to support you every day.
+      </p>
+    </div>
+
+    <button onClick={() => setShowCustomForm(true)}>
+      Request Customized Bracelet
+    </button>
+  </div>
+)}
+
+
+
             </div>
           )}
         </main>
