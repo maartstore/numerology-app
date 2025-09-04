@@ -1,6 +1,8 @@
 import React, { useState } from "react";
+import emailjs from "@emailjs/browser";
 import "./App.css";
 
+// Number → Planet & Crystal mapping
 const crystals = {
   1: "Sun – Carnelian",
   2: "Moon – Clear Quartz",
@@ -13,7 +15,7 @@ const crystals = {
   9: "Mars – Red Jasper",
 };
 
-
+// Reduce any number to single digit 1–9 (no master numbers here)
 const reduceToSingle = (num) => {
   let n = Number(num) || 0;
   while (n > 9) {
@@ -26,7 +28,7 @@ const reduceToSingle = (num) => {
   return n;
 };
 
-// Flexible DOB parser
+// Flexible DOB parser: accepts "DD/MM/YYYY" or "DDMMYYYY"
 const parseDobFlexible = (dob) => {
   let day, month, year;
 
@@ -48,19 +50,21 @@ const parseDobFlexible = (dob) => {
 };
 
 function App() {
+  // Lead form
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [dob, setDob] = useState("");
   const [sex, setSex] = useState("");
-  const [result, setResult] = useState(null);
   const [error, setError] = useState("");
-  const [showCustomForm, setShowCustomForm] = useState(false);
 
+  // Result & follow-up
+  const [result, setResult] = useState(null);
+  const [showCustomForm, setShowCustomForm] = useState(false);
   const [phone, setPhone] = useState("");
   const [problems, setProblems] = useState("");
 
-  const getPersonality = ({ day }) =>
-    day > 9 ? reduceToSingle(day) : day;
+  // Core numbers
+  const getPersonality = ({ day }) => (day > 9 ? reduceToSingle(day) : day);
 
   const getDestiny = ({ day, month, year }) => {
     const digits = `${day}${month}${year}`.split("").map(Number);
@@ -80,8 +84,14 @@ function App() {
     return reduceToSingle(base);
   };
 
-  const buildGrid = ({ day, month, year }) => {
-    const digits = `${day}${month}${year}`
+  /**
+   * Build Lo Shu Grid using:
+   *   DOB digits (non-zero) + Personality + Destiny + KUA
+   * This matches your notebook example (extra 3 and extra 1 for 03/10/1972 Male).
+   */
+  const buildGrid = ({ day, month, year }, personality, destiny, kua) => {
+    const source = `${day}${month}${year}${personality}${destiny}${kua}`;
+    const digits = source
       .split("")
       .map(Number)
       .filter((n) => n !== 0 && !isNaN(n));
@@ -93,6 +103,7 @@ function App() {
 
   const handleCalculate = (e) => {
     e.preventDefault();
+
     if (!name || !email || !dob || !sex) {
       setError("Please fill in all fields.");
       return;
@@ -103,19 +114,20 @@ function App() {
       setError("Invalid DOB. Use DD/MM/YYYY or DDMMYYYY.");
       return;
     }
-
     setError("");
 
     const personality = getPersonality(parsed);
     const destiny = getDestiny(parsed);
     const kua = getKua(parsed, sex);
-    const grid = buildGrid(parsed);
 
-    let missing = Object.keys(grid)
+    // Build grid with DOB + P + D + K
+    const grid = buildGrid(parsed, personality, destiny, kua);
+
+    // Missing numbers = cells with zero count after including P, D, K
+    const missing = Object.keys(grid)
       .map(Number)
-      .filter((n) => grid[n].length === 0);
-
-    missing = missing.filter((n) => n !== personality && n !== destiny);
+      .filter((n) => grid[n].length === 0)
+      .sort((a, b) => a - b);
 
     setResult({
       name,
@@ -125,41 +137,44 @@ function App() {
       destiny,
       kua,
       grid,
-      missing: missing.sort((a, b) => a - b),
+      missing,
     });
   };
 
+  // Send custom request by EmailJS (replace IDs with yours)
   const handleCustomSubmit = (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  const templateParams = {
-    name,
-    dob,
-    sex,
-    email,
-    phone,
-    problems,
-    missing: result?.missing.join(", "),
-    personality: result?.personality,
-    destiny: result?.destiny,
-    kua: result?.kua,
+    const templateParams = {
+      name,
+      dob,
+      sex,
+      email,
+      phone,
+      problems,
+      missing: result?.missing.join(", "),
+      personality: result?.personality,
+      destiny: result?.destiny,
+      kua: result?.kua,
+    };
+
+    // TODO: replace these with your real EmailJS IDs
+    emailjs
+      .send(
+        "service_3utumto",
+        "template_x8vvq94",
+        templateParams,
+        "uIGlyuK3r1TB-2GS3"
+      )
+      .then(() => {
+        alert("✅ Your request has been sent! Our team will contact you soon.");
+        setShowCustomForm(false);
+      })
+      .catch((err) => {
+        console.error("EmailJS error:", err);
+        alert("⚠️ Something went wrong. Please try again.");
+      });
   };
-
-  emailjs.send(
-    "service_3utumto",    
-    "Ytemplate_x8vvq94",   
-    templateParams,
-    "uIGlyuK3r1TB-2GS3"     
-  )
-  .then(() => {
-    alert("✅ Your request has been sent! Our team will contact you soon.");
-  })
-  .catch((err) => {
-    console.error("FAILED...", err);
-    alert("⚠️ Something went wrong. Please try again.");
-  });
-};
-
 
   return (
     <div className="App">
@@ -179,6 +194,7 @@ function App() {
                 placeholder="Enter your full name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+                autoComplete="name"
               />
             </div>
 
@@ -189,6 +205,7 @@ function App() {
                 placeholder="Enter your email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                autoComplete="email"
               />
             </div>
 
@@ -219,37 +236,50 @@ function App() {
           {result && (
             <div className="result-box">
               <h2>Hello, {result.name} ({result.sex})</h2>
-              <p>Email: {result.email}</p>
+              <p>Email: {email}</p>
 
-              <p>Personality: <span className="highlight">{result.personality}</span></p>
-              <p>Destiny: <span className="highlight">{result.destiny}</span></p>
-              <p>KUA: <span className="highlight">{result.kua}</span></p>
+              <div className="nums-row">
+                <div className="num-card">
+                  <div className="num-label">Personality</div>
+                  <div className="num-value">{result.personality}</div>
+                </div>
+                <div className="num-card">
+                  <div className="num-label">Destiny</div>
+                  <div className="num-value">{result.destiny}</div>
+                </div>
+                <div className="num-card">
+                  <div className="num-label">KUA</div>
+                  <div className="num-value">{result.kua}</div>
+                </div>
+              </div>
 
               <h3>Lo Shu Grid</h3>
               <div className="grid">
                 {[4, 9, 2, 3, 5, 7, 8, 1, 6].map((n) => {
                   let cellClass = "present";
-                  if (result.missing.includes(n)) {
-                    cellClass = "missing";
-                  } else if (
+                  const isMissing = result.missing.includes(n);
+                  const isCore =
                     n === result.personality ||
                     n === result.destiny ||
-                    n === result.kua
-                  ) {
-                    cellClass = "core";
-                  }
+                    n === result.kua;
+
+                  if (isMissing) cellClass = "missing";
+                  else if (isCore) cellClass = "core";
+
                   return (
                     <div key={n} className={`grid-cell ${cellClass}`}>
-                      {result.grid[n].length > 0 ? result.grid[n].join(" ") : n}
+                      {result.grid[n].length > 0 ? result.grid[n].join("") : n}
                     </div>
                   );
                 })}
               </div>
 
               <h3>Recommendations</h3>
+
               {result.missing.length === 0 && (
                 <p>🎉 You have no missing numbers! Keep shining!</p>
               )}
+
               {result.missing.length === 1 && (
                 <div>
                   <p>
@@ -265,47 +295,45 @@ function App() {
                   </a>
                 </div>
               )}
+
               {result.missing.length > 1 && (
-  <div>
-    <div className="recommendation-text">
-      <p>
-        Based on your date of birth and Lo Shu Grid, our Maart Store
-        numerology specialists have found that some numbers are missing
-        in your chart:
-      </p>
+                <div>
+                  <div className="recommendation-text">
+                    <p>
+                      Based on your date of birth and Lo Shu Grid, our Maart Store
+                      numerology specialists have found that some numbers are missing
+                      in your chart:
+                    </p>
 
-      <ul>
-        {result.missing.map((num) => (
-          <li key={num}>
-            {num} → {crystals[num]}
-          </li>
-        ))}
-      </ul>
+                    <ul>
+                      {result.missing.map((num) => (
+                        <li key={num}>
+                          {num} → {crystals[num]}
+                        </li>
+                      ))}
+                    </ul>
 
-      <p>
-        These missing numbers show where a little more balance and
-        support is needed in your life.
-      </p>
-      <p>
-        That’s why instead of suggesting just one crystal, we’ll create
-        a custom bracelet with the perfect combination of crystals chosen
-        specially for you. This blend is designed to bring more luck,
-        harmony, and stability, while being easy to wear and maintain.
-      </p>
-      <p>
-        Think of it as your personal energy companion — crafted with care
-        to support you every day.
-      </p>
-    </div>
+                    <p>
+                      These missing numbers show where a little more balance and
+                      support is needed in your life.
+                    </p>
+                    <p>
+                      That’s why instead of suggesting just one crystal, we’ll create
+                      a custom bracelet with the perfect combination of crystals chosen
+                      specially for you. This blend is designed to bring more luck,
+                      harmony, and stability, while being easy to wear and maintain.
+                    </p>
+                    <p>
+                      Think of it as your personal energy companion — crafted with care
+                      to support you every day.
+                    </p>
+                  </div>
 
-    <button onClick={() => setShowCustomForm(true)}>
-      Request Customized Bracelet
-    </button>
-  </div>
-)}
-
-
-
+                  <button onClick={() => setShowCustomForm(true)}>
+                    Request Customized Bracelet
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </main>
